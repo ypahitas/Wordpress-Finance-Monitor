@@ -1,0 +1,14 @@
+[
+    {
+        "symbol": "CSSPX.MI",
+        "Description": "Ishares Core S&P 500",
+        "NumberOfStocks": 4,
+        "TotalCost": 811.84
+    },
+    {
+        "symbol": "EEE.PA",
+        "Description": "EasyETF Baripas Eurozone ETF",
+        "NumberOfStocks": 1,
+        "TotalCost": 253.00
+    }
+]
