@@ -20,6 +20,7 @@ register_activation_hook( __FILE__, array( 'FinanceMonitor', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'FinanceMonitor', 'deactivate' ) );
 
 //Runs every day according to wp Cron
-add_action( 'my_daily_event', array( 'FinanceMonitor', 'monitorPortfolio') );
+add_action( 'my_daily_event', array( 'FinanceMonitor', 'HandleDebugLog') );
+add_action( 'my_daily_event', array( 'FinanceMonitor', 'MonitorPortfolio') );
 
 ?>

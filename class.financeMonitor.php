@@ -25,15 +25,29 @@ class financeMonitor{
 		wp_clear_scheduled_hook('my_daily_event');
 	} 
 
+	//If the Debug log becomes too large, rename it to avoid issues
+	public static function HandleDebugLog(){
+		$debugLogPath=WP_CONTENT_DIR . '/debug.log';
+		$backUpFolderPath=WP_CONTENT_DIR .'/DebugBackUp';
+		//Set a Max size of arbitary 20MB
+		$fileSize =filesize ($debugLogPath);
+		if($fileSize!=false && $fileSize>20000000 ){
+			if (!file_exists($backUpFolderPath)) {
+				mkdir($backUpFolderPath);
+			}
+			rename($debugLogPath, $backUpFolderPath.date("Y-m-d")."log");
+		}
+	}
 	//Run procedure that:
 	//Only executes once a month
 	//Gets current prices
 	//updates database
 	//compares with last month/year etc
 	//creates alerts if certain thresholds are exceeded
-	public static function monitorPortfolio() { 
+	public static function MonitorPortfolio() { 
 		global $logger;
 		try{
+
 			require_once( FINANCEMONITOR__PLUGIN_DIR . 'Logger.php');
 			require_once( FINANCEMONITOR__PLUGIN_DIR . 'dbHandler.php');
 
