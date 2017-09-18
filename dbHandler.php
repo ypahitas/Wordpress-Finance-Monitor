@@ -30,9 +30,9 @@ class DBHandler{
 
         $tablefinanceMonitorStockDataStatement = "CREATE TABLE IF NOT EXISTS $tablefinanceMonitorStockDataName (
         ID int NOT NULL AUTO_INCREMENT,
-        time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+        date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         stockSymbol varchar(255),
-        price decimal,
+        price decimal(8,2),
         numberOfStocks int,
         PRIMARY KEY  (id)
         ) $charset_collate;";
@@ -78,6 +78,24 @@ class DBHandler{
         ); 
     }
 
+        //Call this method to insert a stock price to the db
+        public function setStockPrice($stockSymbol,$price,$numberOfStocks,$dateFormat){
+            global $wpdb,$logger;
+            $this->InitialiseVars();
+            $logger->write_log ("Setting stock price");
+    
+            $tablefinanceMonitorStockDataName = $wpdb->prefix . "financeMonitorStockData"; 
+
+            $wpdb->insert( 
+                $tablefinanceMonitorStockDataName, 
+                array( 
+                    'stockSymbol' => $stockSymbol,
+                    'price' => $price, 
+                    'numberOfStocks' => $numberOfStocks,
+                    'date' => current_time( $dateFormat )                
+                )
+            ); 
+        }
     private function InitialiseVars()
     {
         global $logger;

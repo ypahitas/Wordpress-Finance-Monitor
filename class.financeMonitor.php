@@ -60,25 +60,27 @@ class financeMonitor{
 
 				foreach ($stockArray as $stock) {
 					//get stock and compare return
-					$previousClose = $financeMonitor->getStockPrice($stock->symbol);
-					$currentValue = $previousClose * $stock->NumberOfStocks;
+					$currentPrice = $financeMonitor->getStockPrice($stock->symbol);
+					$currentValue = $currentPrice * $stock->NumberOfStocks;
 					$ROI = ($currentValue - $stock->TotalCost)/$stock->TotalCost;
-					
+					$formattedPercentageROI = number_format ($ROI*100,2);
 					//Adding to the overall portfolio value
 					$totalInitialCost+=$stock->TotalCost;
 					$totalCurrentValue+=$currentValue;
 
 					//Add stock ROI to report
-					$financeMonitor->addReport($stock->symbol." Return since Buy - ". ($ROI*100)."%");
-					
-					//TODO Add to DB, compare to last month, last year etc
+					$financeMonitor->addReport($stock->symbol." Return since Buy: ". $formattedPercentageROI ."%");
+					$dbHandler->setStockPrice($stock->symbol,$currentPrice,$stock->NumberOfStocks,"Y-m-d");
+					//TODO compare to last month, last year etc
 
 					//TODO alerts based on config
 				}
 				$ROI = ($totalCurrentValue - $totalInitialCost)/$totalInitialCost;
+				$formattedPercentageROI = number_format ($ROI*100,2);
 				//Add portfolio ROI to report
-				$financeMonitor->addReport("Portfolio return - ". ($ROI*100)."%");
-
+				$financeMonitor->addReport("Portfolio return: ". $formattedPercentageROI ."%");
+				//Add to DB
+				$dbHandler->setStockPrice("portfolio",$totalCurrentValue,1,"Y-m-d");
 				//set last executed
 				$dbHandler->setLastExecuted("Y-m-d");
 			/* UNCOMMENT}
