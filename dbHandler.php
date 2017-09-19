@@ -78,24 +78,80 @@ class DBHandler{
         ); 
     }
 
-        //Call this method to insert a stock price to the db
-        public function setStockPrice($stockSymbol,$price,$numberOfStocks,$dateFormat){
+    //Call this method to insert a stock price to the db
+    public function setStockPrice($stockSymbol,$price,$numberOfStocks,$dateFormat){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Setting stock price");
+
+        $tablefinanceMonitorStockDataName = $wpdb->prefix . "financeMonitorStockData"; 
+
+        $wpdb->insert( 
+            $tablefinanceMonitorStockDataName, 
+            array( 
+                'stockSymbol' => $stockSymbol,
+                'price' => $price, 
+                'numberOfStocks' => $numberOfStocks,
+                'date' => current_time( $dateFormat )                
+            )
+        ); 
+    }
+
+    //Get last month's price of this stock
+    public function getLastMonthPrice($symbol){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Getting last month's price for ".$symbol);
+
+        $retVal = $this->getLastPrice($symbol,"-1 day");
+
+        return $retVal;
+    }
+    //Get last year's price of this stock
+    public function getLastYearPrice($symbol){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Getting last year's price for ".$symbol);
+
+        $retVal = $this->getLastPrice($symbol,"-1 day");
+        
+        return $retVal;
+    }
+    //Get last month's price of this stock
+    private function getLastPrice($symbol,$timeAgo){
             global $wpdb,$logger;
             $this->InitialiseVars();
-            $logger->write_log ("Setting stock price");
+            $logger->write_log ("Getting ".$timeAgo." price for ".$symbol);
     
+            $tablefinanceMonitorName = $wpdb->prefix . "financeMonitor";
             $tablefinanceMonitorStockDataName = $wpdb->prefix . "financeMonitorStockData"; 
+    
+            $lastMonthDate =date("Y-m-d H:i:s",strtotime($timeAgo));
+           
+            $query ="SELECT price FROM $tablefinanceMonitorStockDataName WHERE stockSymbol = '$symbol' AND date < '$lastMonthDate' ORDER BY id DESC LIMIT 1";
+    
+            $retVal = $wpdb->get_var($query);
+            
+            $logger->write_log ("Price- ".$retVal);
+            return $retVal;
+    }
+    //Get last N price of this stock in the databse
+    public function getLastNPrices($symbol,$number){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Getting last ".$number." prices for ".$symbol);
 
-            $wpdb->insert( 
-                $tablefinanceMonitorStockDataName, 
-                array( 
-                    'stockSymbol' => $stockSymbol,
-                    'price' => $price, 
-                    'numberOfStocks' => $numberOfStocks,
-                    'date' => current_time( $dateFormat )                
-                )
-            ); 
-        }
+        $tablefinanceMonitorName = $wpdb->prefix . "financeMonitor";
+        $tablefinanceMonitorStockDataName = $wpdb->prefix . "financeMonitorStockData"; 
+      
+        $query ="SELECT price FROM $tablefinanceMonitorStockDataName WHERE stockSymbol = '$symbol' ORDER BY id DESC LIMIT $number";
+
+        $retVal = $wpdb->get_col($query);
+        
+        $logger->write_log ("Prices- ". implode(',',$retVal));
+        
+        return $retVal;
+    }
     private function InitialiseVars()
     {
         global $logger;

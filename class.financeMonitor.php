@@ -57,6 +57,13 @@ class financeMonitor{
 			$financeMonitor = new financeMonitor();
 			$logger->write_log("Monitor Portfolio");
 
+			$portfolioDBName="portfolio";
+			//Alerts settings
+			//Threshold which will trigger alert
+			$mtdThreshold =-0.1;
+			$ytdThreshold =-0.1;
+			$lastFiveAverageThreshold =-0.1;
+
 			//Clear alerts and reports
 			$financeMonitor->resetAlerts();
 			$financeMonitor->resetReport();
@@ -85,17 +92,46 @@ class financeMonitor{
 
 					//Add stock ROI to report
 					$financeMonitor->addReport($stock->symbol." Return since Buy: ". $formattedPercentageROI ."%");
+					//Compare month to date
+					$mtd = $dbHandler->getLastMonthPrice($stock->symbol);
+					if($financeMonitor->ChangeAlert($stock->TotalCost,$mtd,$mtdThreshold)){
+						$financeMonitor->addAlert("Month to Date Alert for ".$stock->symbol);
+					}
+					//Compare year to date
+					$ytd = $dbHandler->getLastYearPrice($stock->symbol);
+					if($financeMonitor->ChangeAlert($stock->TotalCost,$ytd,$ytdThreshold)){
+						$financeMonitor->addAlert("Year to Date Alert for ".$stock->symbol);
+					}
+					//Compare moving average
+					$lastFivePrices=$dbHandler->getLastNPrices($stock->symbol,5);
+					if($financeMonitor->ChangeAlert($stock->TotalCost,$ytd,$lastFiveAverageThreshold)){
+						$financeMonitor->addAlert("Moving average Alert for ".$stock->symbol);
+					}
+					//Add new price to DB
 					$dbHandler->setStockPrice($stock->symbol,$currentPrice,$stock->NumberOfStocks,"Y-m-d");
-					//TODO compare to last month, last year etc
-
-					//TODO alerts based on config
 				}
+				//Portfolio monitoring
 				$ROI = ($totalCurrentValue - $totalInitialCost)/$totalInitialCost;
 				$formattedPercentageROI = number_format ($ROI*100,2);
 				//Add portfolio ROI to report
 				$financeMonitor->addReport("Portfolio return: ". $formattedPercentageROI ."%");
+				//Compare month to date - Porfolio threshold lower
+				$mtd = $dbHandler->getLastMonthPrice($portfolioDBName);
+				if($financeMonitor->ChangeAlert($totalInitialCost,$mtd,$mtdThreshold/2)){
+					$financeMonitor->addAlert("Month to Date Alert for ".$portfolioDBName);
+				}
+				//Compare year to date  - Porfolio threshold lower
+				$ytd = $dbHandler->getLastYearPrice($portfolioDBName);
+				if($financeMonitor->ChangeAlert($totalInitialCost,$ytd,$ytdThreshold/2)){
+					$financeMonitor->addAlert("Year to Date Alert for ".$portfolioDBName);
+				}
+				//Compare moving average - Porfolio threshold lower
+				$lastFivePrices=$dbHandler->getLastNPrices($portfolioDBName,5);
+				if($financeMonitor->ChangeAlert($totalInitialCost,$ytd,$lastFiveAverageThreshold/2)){
+					$financeMonitor->addAlert("Moving average Alert for ".$portfolioDBName);
+				}
 				//Add to DB
-				$dbHandler->setStockPrice("portfolio",$totalCurrentValue,1,"Y-m-d");
+				$dbHandler->setStockPrice($portfolioDBName,$totalCurrentValue,1,"Y-m-d");
 				//set last executed
 				$dbHandler->setLastExecuted("Y-m-d");
 			/* UNCOMMENT}
@@ -216,6 +252,21 @@ class financeMonitor{
 		$price = $jsonResponseArray["query"]["results"]["quote"]["LastTradePriceOnly"];
 		$logger->write_log ("Price retrieved - ".$price);
 		return $price;
+	}
+	//Compares the current price against the old price to see if it exceeds threshold
+	//Threshold should be a negative one
+	//Returns True if an alert should be added
+	//False otherwise
+	function ChangeAlert($currentPrice,$oldPrice,$threshold){
+		global $logger;
+		$logger->write_log ("Comparing change: ".$currentPrice.",".$oldPrice.",".$threshold);
+		$change= ($currentPrice - $oldPrice)/$oldPrice;
+		if($change < $threshold){
+			return true;
+		}
+		else{
+			return false;
+		}		
 	}
 }
 
