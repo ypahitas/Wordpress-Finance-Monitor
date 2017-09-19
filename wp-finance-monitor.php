@@ -22,6 +22,10 @@ register_deactivation_hook( __FILE__, array( 'FinanceMonitor', 'deactivate' ) );
 //Runs every day according to wp Cron
 add_action( 'my_daily_event', array( 'FinanceMonitor', 'HandleDebugLog') );
 add_action( 'my_daily_event', array( 'FinanceMonitor', 'MonitorPortfolio') );
+
+//run plugin everytime page loads
+//add_action( 'wp', array( 'FinanceMonitor', 'MonitorPortfolio'));
+
 //change email from address
 add_filter( 'wp_mail_from', 'plugin_mail_from' );
 add_filter( 'wp_mail_from_name', 'plugin_mail_name' );

@@ -22,7 +22,8 @@ class financeMonitor{
 	} 
 	
 	public static function deactivate() {
-		wp_clear_scheduled_hook('my_daily_event');
+		wp_clear_scheduled_hook('my_daily_event');		
+		//remove_action( 'wp', array( 'FinanceMonitor', 'MonitorPortfolio'));
 	} 
 
 	//If the Debug log becomes too large, rename it to avoid issues
@@ -181,7 +182,16 @@ class financeMonitor{
 		$message = $reports . "\r\n" . $alerts;
 		//Only send the email if there is something to report
 		if($reports !='' or $alerts !=''){
-			wp_mail("ypahitas@hotmail.com", "finance Monitor", $message);
+			$sent_message = wp_mail(array("ypahitas@hotmail.com","ypahitas@gmail.com"), "finance Monitor", $message);
+			
+			//log message based on the result.
+			if ( $sent_message ) {
+				// The message was sent.
+				$logger->write_log("Email was sent");
+			} else {
+				// The message was not sent.
+				$logger->write_log("Email was sent");
+			}
 		}else{
 			$logger->write_log ("Empty email, will not send.");
 		}	
