@@ -104,7 +104,8 @@ class financeMonitor{
 					}
 					//Compare moving average
 					$lastFivePrices=$dbHandler->getLastNPrices($stock->symbol,5);
-					if($financeMonitor->ChangeAlert($stock->TotalCost,$ytd,$lastFiveAverageThreshold)){
+					$movingAverage = array_sum($lastFivePrices) /count($lastFivePrices);
+					if($financeMonitor->ChangeAlert($stock->TotalCost,$movingAverage,$lastFiveAverageThreshold)){
 						$financeMonitor->addAlert("Moving average Alert for ".$stock->symbol);
 					}
 					//Add new price to DB
@@ -127,7 +128,8 @@ class financeMonitor{
 				}
 				//Compare moving average - Porfolio threshold lower
 				$lastFivePrices=$dbHandler->getLastNPrices($portfolioDBName,5);
-				if($financeMonitor->ChangeAlert($totalInitialCost,$ytd,$lastFiveAverageThreshold/2)){
+				$movingAverage = array_sum($lastFivePrices) /count($lastFivePrices);
+				if($financeMonitor->ChangeAlert($totalInitialCost,$movingAverage,$lastFiveAverageThreshold/2)){
 					$financeMonitor->addAlert("Moving average Alert for ".$portfolioDBName);
 				}
 				//Add to DB
