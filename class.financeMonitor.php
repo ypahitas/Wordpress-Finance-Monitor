@@ -257,6 +257,7 @@ class financeMonitor{
 	//Threshold should be a negative one
 	//Returns True if an alert should be added
 	//False otherwise
+	//If any of the input parameters are empty, it will generate an alert - Disred outcome
 	function ChangeAlert($currentPrice,$oldPrice,$threshold){
 		global $logger;
 		$logger->write_log ("Comparing change: ".$currentPrice.",".$oldPrice.",".$threshold);
