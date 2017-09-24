@@ -103,7 +103,7 @@ class DBHandler{
         $this->InitialiseVars();
         $logger->write_log ("Getting last month's price for ".$symbol);
 
-        $retVal = $this->getLastPrice($symbol,"-1 day");
+        $retVal = $this->getLastPrice($symbol,"-1 month");
 
         return $retVal;
     }
@@ -113,7 +113,7 @@ class DBHandler{
         $this->InitialiseVars();
         $logger->write_log ("Getting last year's price for ".$symbol);
 
-        $retVal = $this->getLastPrice($symbol,"-1 day");
+        $retVal = $this->getLastPrice($symbol,"-1 year");
         
         return $retVal;
     }
