@@ -94,16 +94,16 @@ class financeMonitor{
 					$financeMonitor->addReport($stock->symbol." Return since Buy: ". $formattedPercentageROI ."%");
 					//Compare month to date
 					$mtd = $dbHandler->getLastMonthPrice($stock->symbol);
-					if($financeMonitor->ChangeAlert($stock->TotalCost,$mtd,$mtdThreshold)){
+					if($mtd !== -1 && $financeMonitor->ChangeAlert($stock->TotalCost,$mtd,$mtdThreshold)){
 						$financeMonitor->addAlert("Month to Date Alert for ".$stock->symbol);
 					}
 					//Compare year to date
 					$ytd = $dbHandler->getLastYearPrice($stock->symbol);
-					if($financeMonitor->ChangeAlert($stock->TotalCost,$ytd,$ytdThreshold)){
+					if($ytd !== -1 && $financeMonitor->ChangeAlert($stock->TotalCost,$ytd,$ytdThreshold)){
 						$financeMonitor->addAlert("Year to Date Alert for ".$stock->symbol);
 					}
 					//Compare moving average
-					$lastFivePrices=$dbHandler->getLastNPrices($stock->symbol,5);
+					$lastFivePrices=$dbHandler->getLastNPrices($stock->symbol,50);
 					$movingAverage = array_sum($lastFivePrices) /count($lastFivePrices);
 					if($financeMonitor->ChangeAlert($stock->TotalCost,$movingAverage,$lastFiveAverageThreshold)){
 						$financeMonitor->addAlert("Moving average Alert for ".$stock->symbol);
@@ -118,16 +118,16 @@ class financeMonitor{
 				$financeMonitor->addReport("Portfolio return: ". $formattedPercentageROI ."%");
 				//Compare month to date - Porfolio threshold lower
 				$mtd = $dbHandler->getLastMonthPrice($portfolioDBName);
-				if($financeMonitor->ChangeAlert($totalInitialCost,$mtd,$mtdThreshold/2)){
+				if($mtd !== -1 && $financeMonitor->ChangeAlert($totalInitialCost,$mtd,$mtdThreshold/2)){
 					$financeMonitor->addAlert("Month to Date Alert for ".$portfolioDBName);
 				}
 				//Compare year to date  - Porfolio threshold lower
 				$ytd = $dbHandler->getLastYearPrice($portfolioDBName);
-				if($financeMonitor->ChangeAlert($totalInitialCost,$ytd,$ytdThreshold/2)){
+				if($ytd !== -1 && $financeMonitor->ChangeAlert($totalInitialCost,$ytd,$ytdThreshold/2)){
 					$financeMonitor->addAlert("Year to Date Alert for ".$portfolioDBName);
 				}
 				//Compare moving average - Porfolio threshold lower
-				$lastFivePrices=$dbHandler->getLastNPrices($portfolioDBName,5);
+				$lastFivePrices=$dbHandler->getLastNPrices($portfolioDBName,50);
 				$movingAverage = array_sum($lastFivePrices) /count($lastFivePrices);
 				if($financeMonitor->ChangeAlert($totalInitialCost,$movingAverage,$lastFiveAverageThreshold/2)){
 					$financeMonitor->addAlert("Moving average Alert for ".$portfolioDBName);

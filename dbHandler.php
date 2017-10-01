@@ -98,6 +98,7 @@ class DBHandler{
     }
 
     //Get last month's price of this stock
+    //returns -1 if our database does not have a sample for the given period
     public function getLastMonthPrice($symbol){
         global $wpdb,$logger;
         $this->InitialiseVars();
@@ -108,6 +109,7 @@ class DBHandler{
         return $retVal;
     }
     //Get last year's price of this stock
+    //returns -1 if our database does not have a sample for the given period
     public function getLastYearPrice($symbol){
         global $wpdb,$logger;
         $this->InitialiseVars();
@@ -118,6 +120,7 @@ class DBHandler{
         return $retVal;
     }
     //Get last month's price of this stock
+    //returns -1 if our database does not have a sample for the given period
     private function getLastPrice($symbol,$timeAgo){
             global $wpdb,$logger;
             $this->InitialiseVars();
@@ -131,7 +134,11 @@ class DBHandler{
             $query ="SELECT price FROM $tablefinanceMonitorStockDataName WHERE stockSymbol = '$symbol' AND date < '$lastMonthDate' ORDER BY id DESC LIMIT 1";
     
             $retVal = $wpdb->get_var($query);
-            
+
+            //if $retVal is empty it means we haven't build up enough data in our database
+            if(empty($retVal)){
+                $retVal=-1;
+            }
             $logger->write_log ("Price- ".$retVal);
             return $retVal;
     }
