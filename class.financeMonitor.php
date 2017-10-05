@@ -145,8 +145,11 @@ class financeMonitor{
 			//if there are alerts, send email anw
 			$alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";			
 			$alerts = file_get_contents($alertFile);
-		
-			if($interval->format("%m") > 1 || $alerts !=''){
+			
+			$intervalFormat = $interval->format("%m");
+			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
+			
+			if($intervalFormat > 1 || $alerts !='[]'){
 				$financeMonitor->sendMail();
 				//set last executed
 				$dbHandler->setLastExecuted("Y-m-d");
