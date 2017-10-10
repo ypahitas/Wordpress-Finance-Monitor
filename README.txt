@@ -23,3 +23,6 @@ StocksConfiguration json file
     Description: short description of the stock
     NumberOfStocks (Mandatory) - integer value of number of stocks bought
     TotalCost (Mandatory) - total cost to buy them - i.e. price + fees etc
+
+Source code on:
+    https://github.com/ypahitas/Wordpress-Finance-Monitor
