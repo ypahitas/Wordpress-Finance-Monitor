@@ -40,8 +40,26 @@ class DBHandler{
         dbDelta( $tablefinanceMonitorStatement );
         dbDelta( $tablefinanceMonitorStockDataStatement );
     }
-    //Call this method to insert into the database the last executed date
-    public function getLastExecuted(){
+    //Call this method to get from the database the last executed date of the email report
+    public function getLastExecutedEmail(){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Getting last Executed email");
+        $retVal = $this->getLastExecuted("lastExecutedEmail");
+        $logger->write_log ("Last Executed Email - ".$retVal);
+        return $retVal;
+    }
+    //Call this method to get from the database the last executed date of the monitoring
+    public function getLastExecutedMonitoring(){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Getting last Executed Monitor");
+        $retVal = $this->getLastExecuted("lastExecutedMonitor");
+        $logger->write_log ("Last Executed Monitor - ".$retVal);
+        return $retVal;
+    }
+    //Call this method to get from the database the last executed date of either the email report or monitoring itself
+    public function getLastExecuted($key){
         global $wpdb,$logger;
         $this->InitialiseVars();
         $logger->write_log ("Getting last Executed");
@@ -49,13 +67,29 @@ class DBHandler{
         $tablefinanceMonitorName = $wpdb->prefix . "financeMonitor";
         $tablefinanceMonitorStockDataName = $wpdb->prefix . "financeMonitorStockData"; 
         
-        $query ="SELECT value FROM $tablefinanceMonitorName WHERE keyEntry = 'lastExecuted' ORDER BY id DESC LIMIT 1";
+        $query ="SELECT value FROM $tablefinanceMonitorName WHERE keyEntry = '$key' ORDER BY id DESC LIMIT 1";
         $retVal = $wpdb->get_var($query);
         $logger->write_log ("Last Executed - ".$retVal);
         return $retVal;
     }
-    //Call this method to insert into the database the last executed date
-    public function setLastExecuted($format){
+    //Call this method to insert into the database the last executed date of monitoring
+    public function setLastExecutedMonitoring($format){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Setting last Executed Monitor");
+        $this->setLastExecuted("lastExecutedMonitor",$format);
+    }
+
+    //Call this method to insert into the database the last executed date of an email report
+    public function setLastExecutedEmail($format){
+        global $wpdb,$logger;
+        $this->InitialiseVars();
+        $logger->write_log ("Setting last Executed Email");
+        $this->setLastExecuted("lastExecutedEmail",$format);
+    }
+
+    //Call this method to insert into the database the last executed date of either Email report or monitor
+    public function setLastExecuted($key,$format){
         global $wpdb,$logger;
         $this->InitialiseVars();
         $logger->write_log ("Setting last Executed");
@@ -66,17 +100,18 @@ class DBHandler{
         $wpdb->delete( 
             $tablefinanceMonitorName, 
             array( 
-                "keyEntry"=>"lastExecuted"
+                "keyEntry"=>"$key"
             )
         );
         $wpdb->insert( 
             $tablefinanceMonitorName, 
             array( 
-                'keyEntry' => "lastExecuted", 
+                'keyEntry' => "$key", 
                 'value' => current_time( $format )                
             )
         ); 
     }
+
 
     //Call this method to insert a stock price to the db
     public function setStockPrice($stockSymbol,$price,$numberOfStocks,$dateFormat){

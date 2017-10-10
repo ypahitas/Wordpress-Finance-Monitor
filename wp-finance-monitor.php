@@ -15,6 +15,7 @@ Domain Path:
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 define( 'FINANCEMONITOR__PLUGIN_DIR',plugin_dir_path( __FILE__ ));
 require_once( FINANCEMONITOR__PLUGIN_DIR . 'class.financeMonitor.php');
+require_once( FINANCEMONITOR__PLUGIN_DIR . 'class.financeMonitorPageReport.php');
 
 register_activation_hook( __FILE__, array( 'FinanceMonitor', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'FinanceMonitor', 'deactivate' ) );
@@ -37,23 +38,6 @@ function plugin_mail_name( $email ){
   }
 
   //Register Shortcode so that Report and alert can be shown on page.
-  add_shortcode( 'DisplayFinanceMonitor', 'DisplayFinanceMonitor_func' );
-
-  function DisplayFinanceMonitor_func() {
-    //Run monitor
-    $financeMonitor = new financeMonitor();
-    $financeMonitor->PerformMonitoring();
-
-    //Echo results
-    $alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";
-		$reportFile = FINANCEMONITOR__PLUGIN_DIR .  "report/report.json";
-		
-		//read files and construct email body
-		$reports = file_get_contents($reportFile);				
-		$alerts = file_get_contents($alertFile);
-    $message = "<h2>Report</h2><p>$reports</p> <h2>Alerts</h2><p>$alerts</p>";
-    
-    return $message;
-}
+  add_shortcode( 'DisplayFinanceMonitor',  array( 'financeMonitorPageReport', 'DisplayFinanceMonitor') );
 
 ?>

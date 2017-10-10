@@ -135,6 +135,9 @@ class financeMonitor{
 			}
 			//Add to DB
 			$dbHandler->setStockPrice($portfolioDBName,$totalCurrentValue,1,"Y-m-d");
+
+			//set last executed monitoring
+			$dbHandler->setLastExecutedMonitoring("Y-m-d");
 		}
 		catch(Exception $e){
 			//log exception and add alert
@@ -145,7 +148,7 @@ class financeMonitor{
 		}
 		finally{
 			//If executed less than a month ago skip sending email UNLESS there are alerts
-			$lastExecuted = new DateTime($dbHandler->getLastExecuted());
+			$lastExecuted = new DateTime($dbHandler->getLastExecutedEmail());
 			$interval = date_diff($lastExecuted, new DateTime("now"));
 			//if there are alerts, send email anw
 			$alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";			
@@ -157,7 +160,7 @@ class financeMonitor{
 			if($intervalFormat > 1 || $alerts !='[]'){
 				$this->sendMail();
 				//set last executed
-				$dbHandler->setLastExecuted("Y-m-d");
+				$dbHandler->setLastExecutedEmail("Y-m-d");
 			}			
 			else{
 				$logger->write_log ("Sent email within the last month, will not send now");

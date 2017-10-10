@@ -3,6 +3,7 @@ Finance monitor tool by Yiannis Pahitas
 Objective:
 Monitor a portfolio and send periodical reports of performance
 Monitor a portfolio and send alerts for given thresholds
+Allow realtime display via webpage
 
 Architecture:
 Run as a Wordpress plugin
@@ -23,6 +24,8 @@ StocksConfiguration json file
     Description: short description of the stock
     NumberOfStocks (Mandatory) - integer value of number of stocks bought
     TotalCost (Mandatory) - total cost to buy them - i.e. price + fees etc
+
+To display on a webpage use the shortcode [DisplayFinanceMonitor]
 
 Source code on:
     https://github.com/ypahitas/Wordpress-Finance-Monitor
