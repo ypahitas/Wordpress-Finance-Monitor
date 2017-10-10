@@ -43,7 +43,7 @@ function plugin_mail_name( $email ){
     //Run monitor
     $financeMonitor = new financeMonitor();
     $financeMonitor->PerformMonitoring();
-    
+
     //Echo results
     $alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";
 		$reportFile = FINANCEMONITOR__PLUGIN_DIR .  "report/report.json";
@@ -51,7 +51,7 @@ function plugin_mail_name( $email ){
 		//read files and construct email body
 		$reports = file_get_contents($reportFile);				
 		$alerts = file_get_contents($alertFile);
-    $message = $reports . "\r\n" . $alerts;
+    $message = "<h2>Report</h2><p>$reports</p> <h2>Alerts</h2><p>$alerts</p>";
     
     return $message;
 }
