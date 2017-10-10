@@ -36,4 +36,24 @@ function plugin_mail_name( $email ){
     return 'yiannis@yiannispahitas.com'; // new email address from sender.
   }
 
+  //Register Shortcode so that Report and alert can be shown on page.
+  add_shortcode( 'DisplayFinanceMonitor', 'DisplayFinanceMonitor_func' );
+
+  function DisplayFinanceMonitor_func() {
+    //Run monitor
+    $financeMonitor = new financeMonitor();
+    $financeMonitor->PerformMonitoring();
+    
+    //Echo results
+    $alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";
+		$reportFile = FINANCEMONITOR__PLUGIN_DIR .  "report/report.json";
+		
+		//read files and construct email body
+		$reports = file_get_contents($reportFile);				
+		$alerts = file_get_contents($alertFile);
+    $message = $reports . "\r\n" . $alerts;
+    
+    return $message;
+}
+
 ?>
