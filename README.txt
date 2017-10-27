@@ -4,6 +4,7 @@ Objective:
 Monitor a portfolio and send periodical reports of performance
 Monitor a portfolio and send alerts for given thresholds
 Allow realtime display via webpage
+Set up threshold prices for certain stocks that will send a warning
 
 Architecture:
 Run as a Wordpress plugin
@@ -24,6 +25,11 @@ StocksConfiguration json file
     Description: short description of the stock
     NumberOfStocks (Mandatory) - integer value of number of stocks bought
     TotalCost (Mandatory) - total cost to buy them - i.e. price + fees etc
+
+AlertsConfiguration.json file
+    Need to add an array of stocks
+    Threshold value denotes the value that if you cross an alert is generated
+    UpOrDown configures whether the alert occurs whether the price is higher or lower than threshold. Down (default) means that alert is generated if price drops bellow threshold
 
 To display on a webpage use the shortcode [DisplayFinanceMonitor]
 

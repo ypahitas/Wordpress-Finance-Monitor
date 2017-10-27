@@ -16,6 +16,7 @@ class financeMonitor{
 
 		//Assign to the scheduler to execute periodically
 		wp_schedule_event( time(), 'daily', 'my_daily_event' );
+		wp_schedule_event( time(), 'hourly', 'my_hourly_event' );
 		//Create Database tables
 
 		$dbHandler->CreateDB();
@@ -43,7 +44,10 @@ class financeMonitor{
 		$financeMonitor = new financeMonitor();
 		$financeMonitor->PerformMonitoring();
 	}
-	
+	public static function MonitorThresholds() { 
+		$financeMonitor = new financeMonitor();
+		$financeMonitor->PerformThresholdMonitoring();
+	}
 	//Run procedure that:
 	//Only executes once a month
 	//Gets current prices
@@ -158,12 +162,72 @@ class financeMonitor{
 			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
 			
 			if($intervalFormat > 1 || $alerts !='[]'){
-				$this->sendMail();
+				$this->sendMail('ypahitas@hotmail.com');
 				//set last executed
 				$dbHandler->setLastExecutedEmail("Y-m-d");
 			}			
 			else{
 				$logger->write_log ("Sent email within the last month, will not send now");
+			}
+		}
+	}
+
+	//Run procedure that:
+	//sends alerts if certain thresholds are exceeded/missed
+	public function PerformThresholdMonitoring(){
+		global $logger;
+		try{
+
+			require_once( FINANCEMONITOR__PLUGIN_DIR . 'Logger.php');
+			require_once( FINANCEMONITOR__PLUGIN_DIR . 'dbHandler.php');
+
+			$logger = new Logger("/logs");
+			$dbHandler = new DBHandler($logger);
+			
+			$logger->write_log("Monitor Thresholds");
+
+			//Clear alerts and reports
+			$this->resetAlerts();
+			$this->resetReport();
+
+
+			$alertsConfigFile = FINANCEMONITOR__PLUGIN_DIR ."AlertsConfiguration.json";				
+			$stockArray = json_decode(file_get_contents($alertsConfigFile));
+			$logger->write_log($stockArray[0]->symbol);
+
+			foreach ($stockArray as $stock) {
+				//get stock and compare return
+				$currentPrice = $this->getStockPrice($stock->symbol);
+				
+				//Compare to threshold. 
+				if($stock->UpOrDown=== 'up' && $currentPrice > $stock->threshold){
+					$this->addAlert("Price exceeded threshold Alert for ".$stock->symbol);
+				}
+				else{
+					$this->addAlert("Price dropped bellow threshold Alert for ".$stock->symbol);
+				}
+			}
+		}
+		catch(Exception $e){
+			//log exception and add alert
+			$logger->write_log ($e->getMessage());
+			$this->addAlert($e->getMessage());
+			//log stack trace
+			$logger->write_log(json_encode($e->getTrace()));
+		}
+		finally{
+			//if there are alerts, send email anw
+			$alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";			
+			$alerts = file_get_contents($alertFile);
+			
+			$intervalFormat = $interval->format("%m");
+			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
+			
+			if($alerts !='[]'){
+				$this->sendMail('yianniseliades@gmail.com');
+			}			
+			else{
+				$logger->write_log ("Alerts empty not sending anything");
 			}
 		}
 	}
@@ -224,7 +288,7 @@ class financeMonitor{
 	}
 
 	//Send email with reports and alerts
-	function sendMail(){
+	function sendMail($emailAddress){
 		global $logger;
 		$alertFile =  FINANCEMONITOR__PLUGIN_DIR . "report/alerts.json";
 		$reportFile = FINANCEMONITOR__PLUGIN_DIR .  "report/report.json";
@@ -235,7 +299,7 @@ class financeMonitor{
 		$message = $reports . "\r\n" . $alerts;
 		//Only send the email if there is something to report
 		if($reports !='' or $alerts !=''){
-			$sent_message = wp_mail(array("ypahitas@hotmail.com","ypahitas@gmail.com"), "finance Monitor", $message);
+			$sent_message = wp_mail(array($emailAddress), "finance Monitor", $message);
 			
 			//log message based on the result.
 			if ( $sent_message ) {

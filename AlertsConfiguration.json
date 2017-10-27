@@ -1,3 +1,14 @@
-{
-    //Define rules for alerts
-}
+[
+    {
+        "symbol": "EURUSD=X",
+        "Description": "Ishares Core S&P 500",
+        "UpOrDown": "down",
+        "threshold":1.11
+    },
+    {
+        "symbol": "BTCUSD=X",
+        "Description": "Ishares Core S&P 500",
+        "UpOrDown": "down",
+        "threshold":4000
+    }
+]

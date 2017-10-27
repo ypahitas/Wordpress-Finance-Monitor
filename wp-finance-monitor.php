@@ -23,6 +23,7 @@ register_deactivation_hook( __FILE__, array( 'FinanceMonitor', 'deactivate' ) );
 //Runs every day according to wp Cron
 add_action( 'my_daily_event', array( 'FinanceMonitor', 'HandleDebugLog') );
 add_action( 'my_daily_event', array( 'FinanceMonitor', 'MonitorPortfolio') );
+add_action( 'my_hourly_event', array( 'FinanceMonitor', 'MonitorThresholds') );
 
 //run plugin everytime page loads
 //add_action( 'wp', array( 'FinanceMonitor', 'MonitorPortfolio'));
