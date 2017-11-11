@@ -162,7 +162,7 @@ class financeMonitor{
 			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
 			
 			if($intervalFormat > 1 || $alerts !='[]'){
-				$this->sendMail('ypahitas@hotmail.com');
+				$this->sendMail('AddYourEmailAddress');
 				//set last executed
 				$dbHandler->setLastExecutedEmail("Y-m-d");
 			}			
@@ -224,7 +224,7 @@ class financeMonitor{
 			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
 			
 			if($alerts !='[]'){
-				$this->sendMail('yianniseliades@gmail.com');
+				$this->sendMail('AddYourEmailAddress');
 			}			
 			else{
 				$logger->write_log ("Alerts empty not sending anything");
