@@ -1,13 +1,15 @@
 [
     {
-        "symbol": "CSSPX.MI",
+        "symbol": "CSPX",
+        "stockExchange": "AMS",
         "Description": "Ishares Core S&P 500",
         "NumberOfStocks": 4,
         "TotalCost": 811.84,
         "BuyDate": "06/09/2017"
     },
     {
-        "symbol": "EEE.PA",
+        "symbol": "EEE",
+        "stockExchange": "EPA",
         "Description": "EasyETF Baripas Eurozone ETF",
         "NumberOfStocks": 1,
         "TotalCost": 261.00,

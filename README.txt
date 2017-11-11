@@ -8,9 +8,9 @@ Set up threshold prices for certain stocks that will send a warning
 
 Architecture:
 Run as a Wordpress plugin
-Use yahoo finance api
-	https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22CSSPX.MI%22)&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=
-	select * from yahoo.finance.historicaldata where symbol = "YHOO" and startDate = "2009-09-11" and endDate = "2010-03-10"
+Was using yahoo finance api but it got discontinued
+Now using google finance and doing html Parsing until a better solution is found. The url request is of the format
+    https://finance.google.com/finance?q=AMS%3ACSPX 
 Utilise WP cron to schedule jobs to occur periodically
 	https://stackoverflow.com/questions/33762269/how-to-add-cron-to-wordpress
 	https://tommcfarlin.com/wordpress-cron-jobs/

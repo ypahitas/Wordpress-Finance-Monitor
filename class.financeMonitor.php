@@ -1,4 +1,7 @@
 <?php
+			
+// Include the HTM DOM parser library
+include('simple_html_dom.php');
 
 class financeMonitor{
 		
@@ -88,7 +91,7 @@ class financeMonitor{
 
 			foreach ($stockArray as $stock) {
 				//get stock and compare return
-				$currentPrice = $this->getStockPrice($stock->symbol);
+				$currentPrice = $this->getStockPrice($stock->symbol,$stock->stockExchange);
 				if(empty($currentPrice)){
 					$this->addAlert("No Price retrieved for ".$stock->symbol);
 				}
@@ -201,7 +204,7 @@ class financeMonitor{
 
 			foreach ($stockArray as $stock) {
 				//get stock and compare return
-				$currentPrice = $this->getStockPrice($stock->symbol);
+				$currentPrice = $this->getStockPrice($stock->symbol,$stock->stockExchange);
 				
 				//Compare to threshold. 
 				if($stock->UpOrDown=== 'up' && $currentPrice > $stock->threshold){
@@ -318,23 +321,30 @@ class financeMonitor{
 		}	
 
 	}
-	//Queries the Yahoo API to get the last closing price
-	function getStockPrice($stockSymbol){
+	//Yahoo API has been discontinued.
+	//Temporary change until we find a long term solution
+	function getStockPrice($stockSymbol,$stockExchange){
 		global $logger;
 		$logger->write_log ("Get Stock Price - ".$stockSymbol);
 		
-		$webRequest ="https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22"
-			. $stockSymbol
-			."%22)&format=json&diagnostics=false&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
-		
+		$webRequest ="https://finance.google.com/finance?q=".$stockExchange."%3A".$stockSymbol;
+
 		$logger->write_log ($webRequest);
 
-		$jsonResponse = file_get_contents($webRequest);		
-		$logger->write_log ($jsonResponse);
+		// Retrieve the DOM from a given URL
+		$html = file_get_html($webRequest);
 
-		$jsonResponseArray = json_decode($jsonResponse,TRUE);		
-
-		$price = $jsonResponseArray["query"]["results"]["quote"]["LastTradePriceOnly"];
+		// Find the span tag with a class of "pr". Very improper code to go through HTML
+		//Assuming only 1 exists
+		foreach($html->find('span.pr') as $e){
+			$logger->write_log ('Price Panel' . $e->innertext);	
+			$regExMatches;
+			//Regex the value out of the html			
+			preg_match('/>\d+(.\d{2})</', $e->innertext, $regExMatches);
+			$price = $regExMatches[0];
+			$price = str_replace('<','',$price);
+			$price = str_replace('>','',$price); 					
+		}		
 		$logger->write_log ("Price retrieved - ".$price);
 		return $price;
 	}
