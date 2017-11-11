@@ -16,7 +16,7 @@ class financeMonitor{
 
 		//Assign to the scheduler to execute periodically
 		wp_schedule_event( time(), 'daily', 'my_daily_event' );
-		wp_schedule_event( time(), 'hourly', 'my_hourly_event' );
+		//wp_schedule_event( time(), 'hourly', 'my_hourly_event' );
 		//Create Database tables
 
 		$dbHandler->CreateDB();
@@ -25,6 +25,7 @@ class financeMonitor{
 	public static function deactivate() {
 		wp_clear_scheduled_hook('my_daily_event');		
 		//remove_action( 'wp', array( 'FinanceMonitor', 'MonitorPortfolio'));
+		remove_shortcode('DisplayFinanceMonitor');
 	} 
 
 	//If the Debug log becomes too large, rename it to avoid issues
@@ -163,9 +164,9 @@ class financeMonitor{
 			
 			$intervalFormat = $interval->format("%m");
 			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
-			
-			if($intervalFormat > 1 || $alerts !='[]'){
-				$this->sendMail('AddYourEmailAddress');
+			//Send email if it's been a month since last update, or if there are alerts
+			if(empty($lastExecuted) || $intervalFormat > 1 || $alerts !='[]'){
+				$this->sendMail('ypahitas@hotmail.com');
 				//set last executed
 				$dbHandler->setLastExecutedEmail("Y-m-d");
 			}			
