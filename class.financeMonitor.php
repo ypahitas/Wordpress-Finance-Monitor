@@ -169,7 +169,8 @@ class financeMonitor{
 			$logger->write_log ("InterVal since last executed: ".$intervalFormat);
 			//Send email if it's been a month since last update, or if there are alerts
 			if(empty($lastExecuted) || $intervalFormat > 1 || $alerts !='[]'){
-				$this->sendMail('ypahitas@hotmail.com');
+				//TODO add the receiver email address
+				$this->sendMail('');
 				//set last executed
 				$dbHandler->setLastExecutedEmail("Y-m-d");
 			}			

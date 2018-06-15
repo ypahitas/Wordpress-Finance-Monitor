@@ -35,7 +35,8 @@ function plugin_mail_name( $email ){
     return 'Finance Monitor'; // new email name from sender.
   }
   function plugin_mail_from ($email ){
-    return 'yiannis@yiannispahitas.com'; // new email address from sender.
+	  //TODO add the sender email address
+    return ''; // new email address from sender.
   }
 
   //Register Shortcode so that Report and alert can be shown on page.
